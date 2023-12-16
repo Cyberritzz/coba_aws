@@ -1,0 +1,62 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "mysql" // Ganti dengan provider database yang sesuai (mysql, sqlite, dll.)
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./src/generated/client"
+}
+// prisma/schema.prisma
+model User {
+  id           Int      @id @default(autoincrement())
+  fullname     String
+  email        String   @unique
+  contact      String
+  limit        Int      @default(3)
+  history      History[]
+  password     String
+  joined_at    DateTime @default(now()) // Menambahkan joined_at dengan nilai default saat ini
+  is_membership Boolean  @default(false) // Menambahkan is_membership dengan nilai default false
+}
+
+model History {
+  id          Int       @id @default(autoincrement())
+  id_user     Int
+  id_product  Int
+  joined_at   DateTime  @default(now())
+  user        User      @relation(fields: [id_user], references: [id])
+  product     Product   @relation(fields: [id_product], references: [id])
+}
+
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name_product  String   
+  thumbnail     String
+  source_file   String
+  description   String
+  type_product  type_product
+  category      category
+  created_At    DateTime @default(now())
+  history       History[]
+}
+
+model Admin {
+  id        Int     @id @default(autoincrement())
+  username  String  @unique
+  email     String  @unique
+  password  String
+}
+
+enum type_product {
+  premium
+  free
+}
+
+enum category {
+  templates
+  web_design_figma
+  mobile_design_figma  
+}
